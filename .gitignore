@@ -6,6 +6,12 @@
 # dotenv files
 .env
 
+# Node
+node_modules/
+
+# Tailwind CSS build output
+wwwroot/app.min.css
+
 # User-specific files
 *.rsuser
 *.suo

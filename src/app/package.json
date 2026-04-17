@@ -1,0 +1,13 @@
+{
+  "name": "app",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "css:build": "npx @tailwindcss/cli -i wwwroot/app.css -o wwwroot/app.min.css --minify",
+    "css:watch": "npx @tailwindcss/cli -i wwwroot/app.css -o wwwroot/app.min.css --watch"
+  },
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.2.2",
+    "tailwindcss": "^4.2.2"
+  }
+}
