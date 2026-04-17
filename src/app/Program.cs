@@ -1,5 +1,6 @@
 using app.Components;
 using app.Data;
+using app.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -7,6 +8,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")
         ?? "Data Source=evently.db"));
+
+builder.Services.AddScoped<IEventService, EventService>();
 
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();

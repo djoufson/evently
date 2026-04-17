@@ -1,8 +1,7 @@
 @page "/events/{Id:int}"
-@using app.Data
 @using app.Models
-@using Microsoft.EntityFrameworkCore
-@inject AppDbContext Db
+@using app.Services
+@inject IEventService EventService
 @inject NavigationManager Nav
 
 <PageTitle>@(evt?.Title ?? "Event") - Evently</PageTitle>
@@ -105,15 +104,14 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        evt = await Db.Events.Include(e => e.Tags).FirstOrDefaultAsync(e => e.Id == Id);
+        evt = await EventService.GetByIdAsync(Id);
     }
 
     private async Task DeleteEvent()
     {
         if (evt is not null)
         {
-            Db.Events.Remove(evt);
-            await Db.SaveChangesAsync();
+            await EventService.DeleteAsync(evt.Id);
             Nav.NavigateTo("/", forceLoad: true);
         }
     }

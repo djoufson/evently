@@ -1,8 +1,7 @@
 @page "/"
-@using app.Data
 @using app.Models
-@using Microsoft.EntityFrameworkCore
-@inject AppDbContext Db
+@using app.Services
+@inject IEventService EventService
 
 <PageTitle>Evently - Discover Events</PageTitle>
 
@@ -281,8 +280,8 @@
 
     protected override async Task OnInitializedAsync()
     {
-        events = await Db.Events.Include(e => e.Tags).OrderByDescending(e => e.Date).ToListAsync();
-        totalTags = await Db.Tags.CountAsync();
+        events = await EventService.GetAllAsync();
+        totalTags = await EventService.GetTagCountAsync();
         upcomingCount = events.Count(e => e.Date >= DateTime.Today);
     }
 }
