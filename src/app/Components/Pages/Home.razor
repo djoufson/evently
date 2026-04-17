@@ -1,6 +1,107 @@
 @page "/"
+@using app.Data
+@using app.Models
+@using Microsoft.EntityFrameworkCore
+@inject AppDbContext Db
 
-<PageTitle>Evently</PageTitle>
+<PageTitle>Evently - Events</PageTitle>
 
-<h1 class="text-3xl font-bold text-gray-900">Welcome to Evently</h1>
-<p class="mt-2 text-gray-600">Your smart event manager.</p>
+<div class="animate-fade-in">
+    <div class="flex items-center justify-between mb-8">
+        <div>
+            <h1 class="text-3xl font-bold text-gray-900">Events</h1>
+            <p class="mt-1 text-gray-500">Discover and manage your upcoming events</p>
+        </div>
+    </div>
+
+    @if (events.Count == 0)
+    {
+        <div class="text-center py-20 animate-scale-in">
+            <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-primary-100 flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-primary-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+            </div>
+            <h3 class="text-lg font-medium text-gray-900">No events yet</h3>
+            <p class="mt-1 text-gray-500">Get started by creating your first event.</p>
+            <a href="/events/create"
+               class="inline-flex items-center gap-1.5 mt-6 bg-primary-600 text-white hover:bg-primary-700 px-5 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 hover:shadow-md">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
+                </svg>
+                Create Event
+            </a>
+        </div>
+    }
+    else
+    {
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            @foreach (var (evt, index) in events.Select((e, i) => (e, i)))
+            {
+                <a href="@($"/events/{evt.Id}")"
+                   class="group block bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1 animate-slide-up"
+                   style="animation-delay: @(index * 80)ms">
+                    <div class="aspect-[16/9] bg-gradient-to-br from-primary-100 to-primary-200 overflow-hidden">
+                        @if (!string.IsNullOrEmpty(evt.CoverImageUrl))
+                        {
+                            <img src="@evt.CoverImageUrl" alt="@evt.Title"
+                                 class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                        }
+                        else
+                        {
+                            <div class="w-full h-full flex items-center justify-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-primary-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                </svg>
+                            </div>
+                        }
+                    </div>
+                    <div class="p-5">
+                        <div class="flex items-center gap-2 text-xs text-gray-500 mb-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                            @evt.Date.ToString("MMM dd, yyyy")
+                            <span class="text-gray-300">|</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                            </svg>
+                            @evt.Location
+                        </div>
+                        <h3 class="text-lg font-semibold text-gray-900 group-hover:text-primary-600 transition-colors duration-200 line-clamp-1">
+                            @evt.Title
+                        </h3>
+                        <p class="mt-1.5 text-sm text-gray-500 line-clamp-2">@evt.Description</p>
+                        @if (evt.Tags.Count > 0)
+                        {
+                            <div class="flex flex-wrap gap-1.5 mt-3">
+                                @foreach (var tag in evt.Tags.Take(3))
+                                {
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-primary-50 text-primary-700">
+                                        @tag
+                                    </span>
+                                }
+                                @if (evt.Tags.Count > 3)
+                                {
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-500">
+                                        +@(evt.Tags.Count - 3)
+                                    </span>
+                                }
+                            </div>
+                        }
+                    </div>
+                </a>
+            }
+        </div>
+    }
+</div>
+
+@code {
+    private List<Event> events = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        events = await Db.Events.OrderByDescending(e => e.Date).ToListAsync();
+    }
+}

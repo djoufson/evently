@@ -12,6 +12,11 @@ node_modules/
 # Tailwind CSS build output
 wwwroot/app.min.css
 
+# SQLite database files
+*.db
+*.db-shm
+*.db-wal
+
 # User-specific files
 *.rsuser
 *.suo
