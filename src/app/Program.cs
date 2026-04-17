@@ -2,13 +2,28 @@ using app.Apis;
 using app.Components;
 using app.Data;
 using app.Services;
+using app.Settings;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.SemanticKernel;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")
         ?? "Data Source=evently.db"));
+
+var azureOpenAiSection = builder.Configuration.GetSection(AzureOpenAiSettings.SectionName);
+builder.Services.Configure<AzureOpenAiSettings>(azureOpenAiSection);
+
+var azureOpenAi = azureOpenAiSection.Get<AzureOpenAiSettings>();
+if (azureOpenAi is not null)
+{
+    builder.Services.AddAzureOpenAIChatCompletion(
+        azureOpenAi.DeploymentName,
+        azureOpenAi.Endpoint,
+        azureOpenAi.ApiKey,
+        modelId: azureOpenAi.ModelId);
+}
 
 builder.Services.AddScoped<IEventService, EventService>();
 builder.Services.AddScoped<IFileUploadService, FileUploadService>();
