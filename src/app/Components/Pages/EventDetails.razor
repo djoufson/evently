@@ -77,13 +77,13 @@ else
                     </div>
                 </div>
 
-                @if (evt.Tags.Count > 0)
+                @if (evt.Tags is { Count: > 0 })
                 {
                     <div class="flex flex-wrap gap-2 mt-4">
                         @foreach (var tag in evt.Tags)
                         {
                             <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-primary-50 text-primary-700">
-                                @tag
+                                @tag.Name
                             </span>
                         }
                     </div>
@@ -105,7 +105,7 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        evt = await Db.Events.FindAsync(Id);
+        evt = await Db.Events.Include(e => e.Tags).FirstOrDefaultAsync(e => e.Id == Id);
     }
 
     private async Task DeleteEvent()

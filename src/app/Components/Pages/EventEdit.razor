@@ -138,16 +138,15 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        model = await Db.Events.FindAsync(Id);
+        model = await Db.Events.Include(e => e.Tags).FirstOrDefaultAsync(e => e.Id == Id);
         if (model is not null)
         {
-            selectedTags = [.. model.Tags];
+            selectedTags = model.Tags.Select(t => t.Name).ToList();
             coverImageUrl = model.CoverImageUrl;
         }
 
-        availableTags = await Db.Events
-            .SelectMany(e => e.Tags)
-            .Distinct()
+        availableTags = await Db.Tags
+            .Select(t => t.Name)
             .OrderBy(t => t)
             .ToListAsync();
     }
@@ -189,7 +188,18 @@ else
 
         isSubmitting = true;
 
-        model.Tags = selectedTags;
+        var existingTags = await Db.Tags
+            .Where(t => selectedTags.Contains(t.Name))
+            .ToListAsync();
+
+        var newTagNames = selectedTags
+            .Where(name => !existingTags.Any(t => t.Name.Equals(name, StringComparison.OrdinalIgnoreCase)));
+
+        var newTags = newTagNames.Select(name => new Tag { Name = name }).ToList();
+        if (newTags.Count > 0)
+            Db.Tags.AddRange(newTags);
+
+        model.Tags = [.. existingTags, .. newTags];
         model.CoverImageUrl = coverImageUrl;
 
         await Db.SaveChangesAsync();

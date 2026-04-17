@@ -73,13 +73,13 @@
                             @evt.Title
                         </h3>
                         <p class="mt-1.5 text-sm text-gray-500 line-clamp-2">@evt.Description</p>
-                        @if (evt.Tags.Count > 0)
+                        @if (evt.Tags is { Count: > 0 })
                         {
                             <div class="flex flex-wrap gap-1.5 mt-3">
                                 @foreach (var tag in evt.Tags.Take(3))
                                 {
                                     <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-primary-50 text-primary-700">
-                                        @tag
+                                        @tag.Name
                                     </span>
                                 }
                                 @if (evt.Tags.Count > 3)
@@ -102,6 +102,6 @@
 
     protected override async Task OnInitializedAsync()
     {
-        events = await Db.Events.OrderByDescending(e => e.Date).ToListAsync();
+        events = await Db.Events.Include(e => e.Tags).OrderByDescending(e => e.Date).ToListAsync();
     }
 }

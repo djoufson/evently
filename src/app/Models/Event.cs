@@ -8,5 +8,5 @@ public class Event
     public DateTime Date { get; set; }
     public string Location { get; set; } = string.Empty;
     public string? CoverImageUrl { get; set; }
-    public List<string> Tags { get; set; } = [];
+    public List<Tag> Tags { get; set; } = [];
 }
