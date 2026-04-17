@@ -1,56 +1,60 @@
-# Smart Event Manager – Demo Project Specification
+# Smart Event Manager - Demo Project Specification
 
 ## Overview
 
-This project is a simple Event Management application built with .NET and Blazor.
-It is intentionally designed as a non-AI baseline application, which will then be progressively enhanced with AI capabilities during a live demo.
+This project is a simple Event Management application built with .NET and Blazor SSR.
+It is designed as a baseline application that will be progressively enhanced with AI capabilities during a live demo.
 
-The goal is to demonstrate how an existing, traditional application can evolve into an intelligent, AI-powered system using Azure and modern .NET tools.
+The goal is to demonstrate how an existing, traditional application can evolve into an intelligent, AI-powered system using Azure AI services, Semantic Kernel, and modern .NET tools.
 
 ---
 
-# 🎯 Objectives
+## Objectives
 
-- Build a clean, functional non-AI application
+- Build a clean, functional application with a clear separation of concerns
 - Keep the architecture simple but production-oriented
 - Prepare the foundation for incremental AI integration
-- Showcase a clear evolution path from static → intelligent app
+- Showcase a clear evolution path from static to intelligent app
 
 ---
 
-# 🧰 Technology Stack
+## Technology Stack
 
-## Frontend
-- Blazor (Server or SSR preferred for simplicity)
+### Fullstack
 
-## Backend
-- ASP.NET Core (Minimal API or Controllers)
+- Blazor SSR (Server-Side Rendering) - fullstack with .NET
+- Tailwind CSS v4 for styling
 
-## Data Layer
+### Data Layer
+
 - Entity Framework Core
 - SQLite (or PostgreSQL optional)
 
-## AI (introduced later)
-- Azure OpenAI
-- Semantic Kernel
+### AI (introduced progressively)
+
+- Azure AI Services (Azure OpenAI for text, Azure AI Image generation)
+- Semantic Kernel for AI orchestration
 
 ---
 
-# 📦 Core Features (Non-AI Version)
+## Core Features (Non-AI Version)
 
-## Event Management
+### Event Management
+
 - Create, Read, Update, Delete events
 
-## Event Listing
+### Event Listing
+
 - List all events with summary
 
-## Event Details
+### Event Details
+
 - Full event information
 - Placeholder for AI features
 
 ---
 
-# 🧱 Data Model
+## Data Model
 
 ```csharp
 public class Event
@@ -66,35 +70,30 @@ public class Event
 
 ---
 
-# 🔌 API Endpoints
+## Roadmap: AI Integration
 
-- GET /events
-- GET /events/{id}
-- POST /events
-- PUT /events/{id}
-- DELETE /events/{id}
+### Phase 0 - Baseline
 
----
+- CRUD app working with Blazor SSR and Tailwind CSS v4
 
-# 🧭 Roadmap: AI Integration
+### Phase 1 - AI Text Generation
 
-## Phase 0 — Baseline
-- CRUD app working
+- Generate event descriptions using Azure OpenAI via Semantic Kernel
 
-## Phase 1 — AI Text
-- Generate descriptions
+### Phase 2 - AI Chat
 
-## Phase 2 — AI Chat
-- Ask questions about events
+- Ask questions about events using Semantic Kernel chat completions
 
-## Phase 3 — AI Images
-- Generate cover images
+### Phase 3 - AI Image Generation
 
-## Phase 4 — Context AI
-- AI uses app data
+- Generate cover images using Azure AI image generation services
+
+### Phase 4 - Context-Aware AI
+
+- AI uses app data as context for richer, grounded responses
 
 ---
 
-# 🚀 Final Vision
+## Final Vision
 
-A simple CRUD app evolves into an intelligent AI-powered system.
+A simple CRUD app evolves into an intelligent AI-powered system, leveraging Semantic Kernel and Azure AI services for text generation, image generation, and context-aware interactions.
