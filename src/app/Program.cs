@@ -1,3 +1,4 @@
+using app.Apis;
 using app.Components;
 using app.Data;
 using app.Services;
@@ -10,6 +11,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
         ?? "Data Source=evently.db"));
 
 builder.Services.AddScoped<IEventService, EventService>();
+builder.Services.AddScoped<IFileUploadService, FileUploadService>();
 
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
@@ -34,25 +36,7 @@ app.UseHttpsRedirection();
 app.UseAntiforgery();
 app.MapStaticAssets();
 
-var uploadsPath = Path.Combine(app.Environment.WebRootPath, "uploads");
-Directory.CreateDirectory(uploadsPath);
-
-app.MapPost("/api/uploads", async (HttpRequest request) =>
-{
-    var form = await request.ReadFormAsync();
-    var file = form.Files.FirstOrDefault();
-    if (file is null || file.Length == 0)
-        return Results.BadRequest("No file uploaded.");
-
-    var extension = Path.GetExtension(file.FileName);
-    var filename = $"{Guid.NewGuid()}{extension}";
-    var filePath = Path.Combine(uploadsPath, filename);
-
-    await using var stream = new FileStream(filePath, FileMode.Create);
-    await file.CopyToAsync(stream);
-
-    return Results.Ok(new { url = $"/uploads/{filename}" });
-}).DisableAntiforgery();
+app.MapUploadEndpoints();
 
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();

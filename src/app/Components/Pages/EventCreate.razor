@@ -2,6 +2,7 @@
 @using app.Models
 @using app.Services
 @inject IEventService EventService
+@inject IFileUploadService FileUploadService
 @inject NavigationManager Nav
 @rendermode InteractiveServer
 
@@ -133,23 +134,8 @@
         try
         {
             var file = e.File;
-            using var content = new MultipartFormDataContent();
-            using var stream = file.OpenReadStream(maxAllowedSize: 10 * 1024 * 1024);
-            using var ms = new MemoryStream();
-            await stream.CopyToAsync(ms);
-            ms.Position = 0;
-
-            var uploadsDir = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
-            Directory.CreateDirectory(uploadsDir);
-            var extension = Path.GetExtension(file.Name);
-            var filename = $"{Guid.NewGuid()}{extension}";
-            var filePath = Path.Combine(uploadsDir, filename);
-
-            await using var fs = new FileStream(filePath, FileMode.Create);
-            ms.Position = 0;
-            await ms.CopyToAsync(fs);
-
-            coverImageUrl = $"/uploads/{filename}";
+            await using var stream = file.OpenReadStream(maxAllowedSize: 10 * 1024 * 1024);
+            coverImageUrl = await FileUploadService.UploadAsync(stream, file.Name);
         }
         finally
         {
