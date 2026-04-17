@@ -10,10 +10,10 @@
 node_modules/
 
 # Tailwind CSS build output
-wwwroot/app.min.css
+src/app/wwwroot/app.min.css
 
 # Uploaded files
-wwwroot/uploads/
+src/app/wwwroot/uploads/
 
 # SQLite database files
 *.db
