@@ -80,20 +80,18 @@ public class Event
 
 - Generate event descriptions using Azure OpenAI via Semantic Kernel
 
-### Phase 2 - AI Chat
+### Phase 2 - AI Smart Recommendations
 
-- Ask questions about events using Semantic Kernel chat completions
+- Sort and rank events by "fun factor" using Azure OpenAI via Semantic Kernel
+- The AI analyzes event titles, descriptions, and details to score how fun each event is
+- Events are displayed sorted by recommendation score on the listing page
 
 ### Phase 3 - AI Image Generation
 
 - Generate cover images using Azure AI image generation services
 
-### Phase 4 - Context-Aware AI
-
-- AI uses app data as context for richer, grounded responses
-
 ---
 
 ## Final Vision
 
-A simple CRUD app evolves into an intelligent AI-powered system, leveraging Semantic Kernel and Azure AI services for text generation, image generation, and context-aware interactions.
+A simple CRUD app evolves into an intelligent AI-powered system, leveraging Semantic Kernel and Azure AI services for text generation, image generation, and smart event recommendations.
