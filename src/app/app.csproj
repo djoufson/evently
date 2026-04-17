@@ -10,6 +10,7 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" />
+    <PackageReference Include="Microsoft.SemanticKernel" />
   </ItemGroup>
 
   <Target Name="PnpmInstall" BeforeTargets="Build">
