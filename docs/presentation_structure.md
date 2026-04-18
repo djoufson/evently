@@ -6,7 +6,7 @@ Modern applications should be designed to become intelligent, not just functiona
 
 ---
 
-## Slides Overview
+## Part 1 - The Shift
 
 ### 1. Title Slide
 
@@ -16,114 +16,110 @@ Modern applications should be designed to become intelligent, not just functiona
 
 ---
 
-### 2. Software is Changing
+### 2. The Gap
 
+- Users expect smart features: recommendations, generation, context awareness
+- Most apps are still CRUD-only
 - Shift from static apps to intelligent systems
-- Users expect smart features
 
-Key message:
-> “The question is not if we use AI, but where we integrate it.”
+> "The question is not if we use AI, but where we integrate it."
 
 ---
 
-### 3. Where We Are Today
+### 3. AI as a Layer
 
-- Most apps are CRUD-based
-- Lack of intelligence
-
----
-
-### 4. AI as a Layer
-
-- No need to rebuild apps
-- Add AI progressively
+- No need to rebuild apps from scratch
+- Add AI progressively, feature by feature
+- Think of AI as a capability, not a rewrite
 
 ---
 
-### 5. Demo Preview
+### 4. Demo Preview
 
-- Event management app
-- Features:
-  - Description generation
-  - Cover image generation
+- Event management app (Evently)
+- We will enhance it live with:
+  - AI-generated event descriptions (text streaming)
+  - AI-generated cover images
 
 ---
 
-## Tools Section
+## Part 2 - The Stack
 
-### 6. Our Stack
+### 5. Our Stack
 
-- .NET (ASP.NET Core + Blazor)
-- Azure AI
+- .NET (ASP.NET Core + Blazor SSR)
+- Azure AI Services
 - Semantic Kernel
 
 ---
 
-### 7. Why Azure AI
+### 6. Why Azure AI
 
-- Secure
-- Scalable
-- Enterprise-ready
-
----
-
-## Semantic Kernel
-
-### 8. Introduction
-
-- SDK for integrating AI in .NET
+- Secure: data residency, prompts not used for training
+- Scalable: production-grade infrastructure
+- Enterprise-ready: RBAC, monitoring, compliance
 
 ---
 
-### 9. Problem with Raw AI
+### 7. Semantic Kernel - The Glue
 
-- Unstructured prompts
-- Hard to maintain
-
----
-
-### 10. Benefits
-
-- Prompt management
-- Plugins
-- Clean architecture
+- SDK for integrating AI into .NET apps
+- The problem with raw AI: unstructured prompts, hard to test, hard to maintain
+- Semantic Kernel gives you: prompt management, plugins, clean architecture
+- Architecture: `Blazor → API → Semantic Kernel → Azure AI`
 
 ---
 
-### 11. Architecture
+## Part 3 - Live Demo
 
-Blazor → API → Semantic Kernel → Azure AI
+### 8. Demo Time
 
----
-
-## Demo
-
-### 12. Demo Time
-
-- Build and enhance app live
+- Start with the CRUD baseline (Phase 0)
+- Add description generation with streaming
+- Add cover image generation
+- Show the code: services, endpoints, JS interop
 
 ---
 
-## Post Demo
+## Part 4 - Wrap Up
 
-### 13. What Happened
+### 9. Before & After
 
-- From CRUD to intelligent app
-
----
-
-### 14. Key Takeaways
-
-- AI is a capability
-- Start small
-- Keep logic in backend
+- **Before**: static forms, manual content, no intelligence
+- **After**: AI-assisted creation, streaming UX, generated visuals
+- Lines of code added: minimal — AI lives in the service layer
 
 ---
 
-### 15. Final Thought
+### 10. Resilience & Cost
 
-> “Design applications that can evolve into intelligent systems.”
+- Graceful degradation: app works without AI if service is unavailable
+- Azure AI pricing: token-based, start with free tier
+- Latency: streaming mitigates perceived wait time
 
 ---
 
-### 16. Q&A
+### 11. Key Takeaways
+
+- AI is a capability you add, not a paradigm you adopt
+- Start small: one feature, one prompt, one endpoint
+- Keep AI logic in the backend — clean separation
+- Azure + Semantic Kernel = production-ready path
+
+---
+
+### 12. Get Started
+
+- GitHub repo: `github.com/djoufson/evently`
+- Semantic Kernel docs: `learn.microsoft.com/semantic-kernel`
+- Azure AI free tier: `azure.microsoft.com/free`
+
+---
+
+### 13. Final Thought
+
+> "Your next feature might not need more code — it might need a prompt."
+
+---
+
+### 14. Q&A
