@@ -13,4 +13,5 @@ public interface IEventService
     Task<List<string>> GetAllTagNamesAsync();
     Task<int> GetTagCountAsync();
     IAsyncEnumerable<string> GenerateDescriptionAsync(GenerateDescriptionRequest payload, CancellationToken cancellationToken);
+    Task<string> GenerateCoverAsync(GenerateCoverRequest payload, CancellationToken cancellationToken);
 }
