@@ -15,6 +15,9 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 var azureOpenAiSection = builder.Configuration.GetSection(AzureOpenAiSettings.SectionName);
 builder.Services.Configure<AzureOpenAiSettings>(azureOpenAiSection);
 
+var azureOpenAiVisionSection = builder.Configuration.GetSection(AzureOpenAiVisionSettings.SectionName);
+builder.Services.Configure<AzureOpenAiVisionSettings>(azureOpenAiVisionSection);
+
 var azureOpenAi = azureOpenAiSection.Get<AzureOpenAiSettings>();
 if (azureOpenAi is not null)
 {
@@ -23,6 +26,16 @@ if (azureOpenAi is not null)
         azureOpenAi.Endpoint,
         azureOpenAi.ApiKey,
         modelId: azureOpenAi.ModelId);
+}
+
+var azureOpenAiVision = azureOpenAiSection.Get<AzureOpenAiVisionSettings>();
+if (azureOpenAiVision is not null)
+{
+    builder.Services.AddAzureOpenAITextToImage(
+        azureOpenAiVision.DeploymentName,
+        azureOpenAiVision.Endpoint,
+        azureOpenAiVision.ApiKey,
+        modelId: azureOpenAiVision.ModelId);
 }
 
 builder.Services.AddScoped<IEventService, EventService>();
