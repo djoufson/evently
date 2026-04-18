@@ -28,7 +28,7 @@ if (azureOpenAi is not null)
         modelId: azureOpenAi.ModelId);
 }
 
-var azureOpenAiVision = azureOpenAiSection.Get<AzureOpenAiVisionSettings>();
+var azureOpenAiVision = azureOpenAiVisionSection.Get<AzureOpenAiVisionSettings>();
 if (azureOpenAiVision is not null)
 {
     builder.Services.AddAzureOpenAITextToImage(
