@@ -63,12 +63,31 @@
                 <app.Components.Shared.TagSelector SelectedTags="selectedTags" SelectedTagsChanged="tags => selectedTags = tags" AvailableTags="availableTags" />
 
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1.5">Cover Image</label>
+                    <div class="flex items-center justify-between mb-1.5">
+                        <label class="block text-sm font-medium text-gray-700">Cover Image</label>
+                        <button type="button" id="generate-cover-btn" @onclick="GenerateCover"
+                                class="inline-flex items-center gap-1.5 px-3 py-1 text-xs font-medium text-primary-700 bg-primary-50 rounded-lg hover:bg-primary-100 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.455 2.456L21.75 6l-1.036.259a3.375 3.375 0 00-2.455 2.456z" />
+                            </svg>
+                            Generate with AI
+                        </button>
+                    </div>
                     <div class="relative">
-                        @if (!string.IsNullOrEmpty(coverImageUrl))
+                        @if (isGeneratingCover)
+                        {
+                            <div class="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-primary-300 rounded-lg bg-primary-50/50">
+                                <svg class="animate-spin h-6 w-6 text-primary-600 mb-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                                </svg>
+                                <p class="text-sm text-primary-600">Generating cover image...</p>
+                            </div>
+                        }
+                        else if (!string.IsNullOrEmpty(coverImageUrl))
                         {
                             <div class="relative rounded-lg overflow-hidden mb-3 animate-scale-in">
-                                <img src="@coverImageUrl" alt="Cover preview" class="w-full aspect-[16/9] object-cover" />
+                                <img id="cover-preview" src="@coverImageUrl" alt="Cover preview" class="w-full aspect-[16/9] object-cover" />
                                 <button type="button" @onclick="RemoveCoverImage"
                                         class="absolute top-2 right-2 p-1.5 bg-black/50 hover:bg-black/70 rounded-full text-white transition-colors duration-200">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
@@ -130,6 +149,7 @@
     private string? coverImageUrl;
     private bool isUploading;
     private bool isSubmitting;
+    private bool isGeneratingCover;
     private IJSObjectReference? jsModule;
 
     protected override async Task OnInitializedAsync()
@@ -140,13 +160,31 @@
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
-            jsModule = await JS.InvokeAsync<IJSObjectReference>("import", "/js/generate-description.js");
+            jsModule = await JS.InvokeAsync<IJSObjectReference>("import", "/js/ai-generate.js");
     }
 
     private async Task GenerateDescription()
     {
         if (jsModule is null) return;
         await jsModule.InvokeVoidAsync("streamDescription", model.Title, selectedTags.ToArray(), "description", "generate-btn");
+    }
+
+    private async Task GenerateCover()
+    {
+        if (jsModule is null) return;
+        isGeneratingCover = true;
+        StateHasChanged();
+
+        try
+        {
+            var url = await jsModule.InvokeAsync<string?>("generateCover", model.Title, model.Description, selectedTags.ToArray(), "cover-preview", "generate-cover-btn");
+            if (!string.IsNullOrEmpty(url))
+                coverImageUrl = url;
+        }
+        finally
+        {
+            isGeneratingCover = false;
+        }
     }
 
     private async Task HandleFileUpload(InputFileChangeEventArgs e)

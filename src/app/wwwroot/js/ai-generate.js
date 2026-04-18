@@ -34,3 +34,29 @@ export async function streamDescription(title, tags, textareaId, buttonId) {
         button.disabled = false;
     }
 }
+
+export async function generateCover(title, description, tags, imageId, buttonId) {
+    const image = document.getElementById(imageId);
+    const button = document.getElementById(buttonId);
+    if (!button) return null;
+
+    button.disabled = true;
+
+    try {
+        const response = await fetch('/api/events/generate-cover', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ title, description, tags }),
+        });
+
+        if (!response.ok) return null;
+
+        const data = await response.json();
+        if (data.url && image) {
+            image.src = data.url;
+        }
+        return data.url || null;
+    } finally {
+        button.disabled = false;
+    }
+}
