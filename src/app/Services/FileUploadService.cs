@@ -16,4 +16,18 @@ public class FileUploadService(IWebHostEnvironment env) : IFileUploadService
 
         return $"/uploads/{uniqueName}";
     }
+
+    public async Task<string> UploadAsync(ReadOnlyMemory<byte> data, string fileName)
+    {
+        var uploadsDir = Path.Combine(env.WebRootPath, "uploads");
+        Directory.CreateDirectory(uploadsDir);
+
+        var extension = Path.GetExtension(fileName);
+        var uniqueName = $"{Guid.NewGuid()}{extension}";
+        var filePath = Path.Combine(uploadsDir, uniqueName);
+
+        await File.WriteAllBytesAsync(filePath, data.ToArray());
+
+        return $"/uploads/{uniqueName}";
+    }
 }
