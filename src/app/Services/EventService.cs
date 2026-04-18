@@ -3,11 +3,13 @@ using app.Apis;
 using app.Data;
 using app.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
+using Microsoft.SemanticKernel.TextToImage;
 
 namespace app.Services;
 
-public class EventService(AppDbContext db, IChatCompletionService chat) : IEventService
+public class EventService(AppDbContext db, IChatCompletionService chat, ITextToImageService imageService, IFileUploadService fileUploadService) : IEventService
 {
     public async Task<List<Event>> GetAllAsync()
     {
@@ -91,5 +93,21 @@ public class EventService(AppDbContext db, IChatCompletionService chat) : IEvent
             await Task.Delay(100, cancellationToken);
             yield return message.Content ?? string.Empty;
         }
+    }
+
+    public async Task<string> GenerateCoverAsync(GenerateCoverRequest payload, CancellationToken cancellationToken)
+    {
+        var images = await imageService.GetImageContentsAsync($"""
+        Generate a cover image for this event
+            title: {payload.Title}
+            description: {payload.Description}
+            tags: {string.Join(',', payload.Tags)}
+        """,
+        cancellationToken: cancellationToken);
+
+        if (images is not { Count: > 0 } || images[0].Data is not { } data)
+            return string.Empty;
+
+        return await fileUploadService.UploadAsync(data, "cover.png");
     }
 }
