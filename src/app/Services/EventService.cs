@@ -1,10 +1,13 @@
+using System.Runtime.CompilerServices;
+using app.Apis;
 using app.Data;
 using app.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.SemanticKernel.ChatCompletion;
 
 namespace app.Services;
 
-public class EventService(AppDbContext db) : IEventService
+public class EventService(AppDbContext db, IChatCompletionService chat) : IEventService
 {
     public async Task<List<Event>> GetAllAsync()
     {
@@ -72,5 +75,21 @@ public class EventService(AppDbContext db) : IEventService
             db.Tags.AddRange(newTags);
 
         return [.. existingTags, .. newTags];
+    }
+
+    public async IAsyncEnumerable<string> GenerateDescriptionAsync(GenerateDescriptionRequest payload, [EnumeratorCancellation] CancellationToken cancellationToken)
+    {
+        var chatHistory = new ChatHistory();
+        chatHistory.AddSystemMessage($"""
+        Generate a 250 words clear description based on these information
+            title: {payload.Title}
+            tags: {string.Join(',', payload.Tags)}
+        """);
+
+        await foreach (var message in chat.GetStreamingChatMessageContentsAsync(chatHistory, cancellationToken: cancellationToken))
+        {
+            await Task.Delay(100, cancellationToken);
+            yield return message.Content ?? string.Empty;
+        }
     }
 }
