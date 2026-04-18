@@ -20,7 +20,14 @@ public static class EventEndpoints
                 }
             }, contentType: "text/event-stream");
         });
+
+        app.MapPost("/api/events/generate-cover", async ([FromBody] GenerateCoverRequest payload, IEventService eventService, CancellationToken cancellationToken) =>
+        {
+            var imageUrl = await eventService.GenerateCoverAsync(payload, cancellationToken);
+            return Results.Ok(new { url = imageUrl });
+        });
     }
 }
 
 public record GenerateDescriptionRequest(string Title, string[] Tags);
+public record GenerateCoverRequest(string Title, string? Description, string[] Tags);
