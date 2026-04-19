@@ -1,10 +1,15 @@
+using System.Runtime.CompilerServices;
+using app.Apis;
 using app.Data;
 using app.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.SemanticKernel;
+using Microsoft.SemanticKernel.ChatCompletion;
+using Microsoft.SemanticKernel.TextToImage;
 
 namespace app.Services;
 
-public class EventService(AppDbContext db) : IEventService
+public class EventService(AppDbContext db, IChatCompletionService chat, ITextToImageService imageService, IFileUploadService fileUploadService) : IEventService
 {
     public async Task<List<Event>> GetAllAsync()
     {
@@ -72,5 +77,37 @@ public class EventService(AppDbContext db) : IEventService
             db.Tags.AddRange(newTags);
 
         return [.. existingTags, .. newTags];
+    }
+
+    public async IAsyncEnumerable<string> GenerateDescriptionAsync(GenerateDescriptionRequest payload, [EnumeratorCancellation] CancellationToken cancellationToken)
+    {
+        var chatHistory = new ChatHistory();
+        chatHistory.AddSystemMessage($"""
+        Generate a 250 words clear description based on these information
+            title: {payload.Title}
+            tags: {string.Join(',', payload.Tags)}
+        """);
+
+        await foreach (var message in chat.GetStreamingChatMessageContentsAsync(chatHistory, cancellationToken: cancellationToken))
+        {
+            await Task.Delay(100, cancellationToken);
+            yield return message.Content ?? string.Empty;
+        }
+    }
+
+    public async Task<string> GenerateCoverAsync(GenerateCoverRequest payload, CancellationToken cancellationToken)
+    {
+        var images = await imageService.GetImageContentsAsync($"""
+        Generate a cover image for this event
+            title: {payload.Title}
+            description: {payload.Description}
+            tags: {string.Join(',', payload.Tags)}
+        """,
+        cancellationToken: cancellationToken);
+
+        if (images is not { Count: > 0 } || images[0].Data is not { } data)
+            return string.Empty;
+
+        return await fileUploadService.UploadAsync(data, "cover.png");
     }
 }

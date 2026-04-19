@@ -1,3 +1,4 @@
+using app.Apis;
 using app.Models;
 
 namespace app.Services;
@@ -11,4 +12,6 @@ public interface IEventService
     Task DeleteAsync(int id);
     Task<List<string>> GetAllTagNamesAsync();
     Task<int> GetTagCountAsync();
+    IAsyncEnumerable<string> GenerateDescriptionAsync(GenerateDescriptionRequest payload, CancellationToken cancellationToken);
+    Task<string> GenerateCoverAsync(GenerateCoverRequest payload, CancellationToken cancellationToken);
 }

@@ -2,13 +2,41 @@ using app.Apis;
 using app.Components;
 using app.Data;
 using app.Services;
+using app.Settings;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.SemanticKernel;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")
         ?? "Data Source=evently.db"));
+
+var azureOpenAiSection = builder.Configuration.GetSection(AzureOpenAiSettings.SectionName);
+builder.Services.Configure<AzureOpenAiSettings>(azureOpenAiSection);
+
+var azureOpenAiVisionSection = builder.Configuration.GetSection(AzureOpenAiVisionSettings.SectionName);
+builder.Services.Configure<AzureOpenAiVisionSettings>(azureOpenAiVisionSection);
+
+var azureOpenAi = azureOpenAiSection.Get<AzureOpenAiSettings>();
+if (azureOpenAi is not null)
+{
+    builder.Services.AddAzureOpenAIChatCompletion(
+        azureOpenAi.DeploymentName,
+        azureOpenAi.Endpoint,
+        azureOpenAi.ApiKey,
+        modelId: azureOpenAi.ModelId);
+}
+
+var azureOpenAiVision = azureOpenAiVisionSection.Get<AzureOpenAiVisionSettings>();
+if (azureOpenAiVision is not null)
+{
+    builder.Services.AddAzureOpenAITextToImage(
+        azureOpenAiVision.DeploymentName,
+        azureOpenAiVision.Endpoint,
+        azureOpenAiVision.ApiKey,
+        modelId: azureOpenAiVision.ModelId);
+}
 
 builder.Services.AddScoped<IEventService, EventService>();
 builder.Services.AddScoped<IFileUploadService, FileUploadService>();
@@ -37,6 +65,7 @@ app.UseAntiforgery();
 app.MapStaticAssets();
 
 app.MapUploadEndpoints();
+app.MapEventEndpoints();
 
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
